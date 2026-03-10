@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisionCoreGroup — Home</title>
+<link rel="stylesheet" href="static/css/main.css">
+<style>
+  /* Hero */
+  .hero {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 60% 40%, rgba(79,142,247,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 90% 80%, rgba(0,212,170,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    max-width: 720px;
+    position: relative;
+    z-index: 1;
+    animation: heroIn 0.8s ease forwards;
+  }
+
+  @keyframes heroIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .hero h1 { margin-bottom: 24px; }
+  .hero h1 .accent { color: var(--gold); }
+  .hero h1 .accent2 { color: var(--accent); }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: rgba(238,240,248,0.6);
+    max-width: 560px;
+    margin-bottom: 40px;
+  }
+
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .hero-right {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 1;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    min-width: 160px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    animation: heroIn 0.8s ease forwards;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.2s; opacity: 0; }
+  .stat-card:nth-child(2) { animation-delay: 0.35s; opacity: 0; }
+  .stat-card:nth-child(3) { animation-delay: 0.5s; opacity: 0; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Featured projects */
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .proj-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .proj-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .proj-card:hover { transform: translateY(-3px); border-color: rgba(79,142,247,0.3); }
+  .proj-card:hover::before { transform: scaleX(1); }
+
+  .proj-card.featured-big { grid-row: span 2; }
+
+  .proj-emoji {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .proj-card h3 { margin-bottom: 8px; }
+
+  .proj-card p {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .proj-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .proj-version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* About strip */
+  .about-strip {
+    background: var(--bg2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .about-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 64px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .about-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+
+  .pillar {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .pillar-icon { font-size: 1.3rem; margin-bottom: 8px; }
+  .pillar h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+  .pillar p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  .about-text { display: flex; flex-direction: column; gap: 16px; }
+  .about-text p { font-size: 0.95rem; line-height: 1.8; color: rgba(238,240,248,0.65); }
+  .about-text .highlight { color: var(--white); font-weight: 500; }
+
+  /* Team preview */
+  .team-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .team-mini {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    flex-shrink: 0;
+    width: 180px;
+    text-align: center;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .team-mini:hover { border-color: rgba(79,142,247,0.3); transform: translateY(-2px); }
+
+  .avatar {
+    width: 52px; height: 52px;
+    background: rgba(79,142,247,0.12);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--gold);
+    margin: 0 auto 12px;
+  }
+
+  .team-mini h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+
+  @media (max-width: 900px) {
+    .hero { padding: 60px 20px; min-height: auto; flex-direction: column; align-items: flex-start; padding-top: 80px; }
+    .hero-right { position: static; transform: none; flex-direction: row; margin-top: 40px; flex-wrap: wrap; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .proj-card.featured-big { grid-row: span 1; }
+    .about-inner { grid-template-columns: 1fr; gap: 40px; }
+    .about-pillars { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="section-tag">Toshkent, O'zbekiston · 2020</div>
+      <h1>
+        Build.<br>
+        <span class="accent">Ship.</span><br>
+        <span class="accent2">Scale.</span>
+      </h1>
+      <p class="hero-desc">
+        VisionCoreGroup — Python, Telegram botlari va zamonaviy veb texnologiyalari asosida
+        real muammolarni hal qiladigan mahsulotlar yaratuvchi jamoa.
+      </p>
+      <div class="hero-actions">
+        <a href="projects.html" class="btn btn-primary btn-lg">Loyihalarni ko'rish →</a>
+        <a href="team.html" class="btn btn-outline btn-lg">Jamoa bilan tanish</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-projects">4+</div>
+        <div class="stat-label">Loyihalar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-team">6</div>
+        <div class="stat-label">Jamoa a'zolari</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-bots">3</div>
+        <div class="stat-label">Aktiv botlar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PROJECTS -->
+  <section class="section">
+    <div class="section-tag reveal">Featured Projects</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;">
+      <h2 class="reveal">Eng mashhur<br>loyihalar</h2>
+      <a href="projects.html" class="btn btn-ghost reveal">Barchasi →</a>
+    </div>
+    <div class="featured-grid" id="featured-grid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <div class="about-strip">
+    <div class="about-inner">
+      <div class="reveal">
+        <div class="section-tag">Biz haqimizda</div>
+        <h2>Kod orqali<br>muammolarni<br>yeching</h2>
+        <div class="about-pillars">
+          <div class="pillar">
+            <div class="pillar-icon">⚡</div>
+            <h4>Tez yetkazish</h4>
+            <p>MVP dan productiongacha tezkor</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🏗️</div>
+            <h4>Sifatli arxitektura</h4>
+            <p>Kengayadigan, barqaror tizimlar</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🤝</div>
+            <h4>Jamoa bilan</h4>
+            <p>Har bir loyihada to'liq qo'llab</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">📊</div>
+            <h4>Natija o'lchov</h4>
+            <p>Ma'lumotga asoslangan qarorlar</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <p>VisionCoreGroup — bu shunchaki IT kompaniya emas. Bu <span class="highlight">real mahsulotlar</span> yaratuvchi kichik, lekin kuchli jamoa. Biz Telegram bot platformalari, veb ilovalar va avtomatlashtirish tizimlarida ixtisoslashganmiz.</p>
+        <p>Bizning har bir loyihamiz <span class="highlight">aniq maqsad</span> bilan boshlanadi va <span class="highlight">o'lchanadigan natija</span> bilan tugaydi. O'zbekiston va undan tashqaridagi mijozlar uchun ishlayapmiz.</p>
+        <div style="margin-top:16px;">
+          <a href="contact.html" class="btn btn-primary">Hamkorlik qilaylik →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM PREVIEW -->
+  <section class="section">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;">
+      <div>
+        <div class="section-tag reveal">Jamoa</div>
+        <h2 class="reveal">Ortida kimlar?</h2>
+      </div>
+      <a href="team.html" class="btn btn-ghost reveal">Barchasi →</a>
+    </div>
+    <div class="team-row" id="team-row">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- BLOG PREVIEW -->
+  <section class="section" style="padding-top:0;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;">
+      <div>
+        <div class="section-tag reveal">So'nggi yangiliklar</div>
+        <h2 class="reveal">Blog</h2>
+      </div>
+      <a href="blog.html" class="btn btn-ghost reveal">Hammasi →</a>
+    </div>
+    <div class="grid-3" id="blog-preview">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+</div>
+
+<div id="footer-placeholder"></div>
+<div id="ai-placeholder"></div>
+
+<script src="static/js/main.js"></script>
+<script src="static/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  trackView('home');
+
+  // Featured projects
+  const projects = DB.get('projects') || [];
+  const fg = document.getElementById('featured-grid');
+  const catEmoji = { food: '🍔', education: '📚', automation: '⚡', business: '💼' };
+
+  projects.slice(0, 3).forEach((p, i) => {
+    fg.innerHTML += `
+      <a href="projects.html" class="proj-card ${i === 0 ? 'featured-big' : ''} reveal">
+        <span class="proj-emoji">${catEmoji[p.category] || '🔧'}</span>
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        <div class="proj-meta">
+          ${statusBadge(p.status)}
+          <span class="proj-version">${p.version}</span>
+        </div>
+        <div class="tag-list">
+          ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>
+      </a>`;
+  });
+
+  // Team row
+  const team = DB.get('team') || [];
+  const tr = document.getElementById('team-row');
+  team.forEach(m => {
+    tr.innerHTML += `
+      <a href="team.html" class="team-mini reveal">
+        <div class="avatar">${m.avatar}</div>
+        <h4>${m.username}</h4>
+        <div style="margin:4px 0">${roleBadge(m.role)}</div>
+        ${levelBadge(m.level)}
+      </a>`;
+  });
+
+  // Blog preview
+  const blog = DB.get('blog') || [];
+  const bp = document.getElementById('blog-preview');
+  blog.slice(0, 3).forEach(post => {
+    bp.innerHTML += `
+      <div class="card reveal" style="cursor:pointer;" onclick="window.location='blog.html'">
+        <div style="font-size:2rem;margin-bottom:16px;">${post.image_emoji}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-bottom:8px;">${formatDate(post.date)}</div>
+        <h3 style="font-size:1rem;margin-bottom:10px;">${post.title}</h3>
+        <p style="font-size:0.82rem;line-height:1.6;color:var(--muted);">${post.excerpt}</p>
+      </div>`;
+  });
+
+  // Stats
+  const stats = DB.get('stats');
+  document.getElementById('stat-projects').textContent = projects.length + '+';
+  document.getElementById('stat-team').textContent = team.length;
+  document.getElementById('stat-bots').textContent = projects.filter(p => p.status === 'active').length;
+});
+</script>
+</body>
+</html>
