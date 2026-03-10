@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — VisionCoreGroup</title>
+<link rel="stylesheet" href="static/css/main.css">
+<style>
+  .page-hero {
+    padding: 80px 48px 48px;
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+  }
+
+  .proj-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .project-card-full {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card-full::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .project-card-full:hover { transform: translateY(-2px); border-color: rgba(79,142,247,0.3); }
+  .project-card-full:hover::before { transform: scaleX(1); }
+  .project-card-full[data-hidden="true"] { display: none; }
+
+  .proj-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 8px; }
+
+  .proj-icon { font-size: 1.8rem; }
+
+  .proj-body h3 { margin-bottom: 10px; }
+  .proj-body p { font-size: 0.85rem; line-height: 1.65; color: var(--muted); margin-bottom: 16px; }
+
+  .proj-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .proj-views {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+    grid-column: 1 / -1;
+  }
+
+  .empty-state div { font-size: 3rem; margin-bottom: 16px; }
+
+  @media (max-width: 900px) {
+    .page-hero { flex-direction: column; padding: 60px 20px 32px; }
+    .proj-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page">
+  <div class="page-hero">
+    <div>
+      <div class="section-tag">Loyihalar</div>
+      <h1>Projects &<br>Portfolio</h1>
+    </div>
+    <p style="max-width:420px;font-size:0.95rem;line-height:1.75;color:var(--muted);">
+      Jamoamiz tomonidan yaratilgan barcha loyihalar. Har bir loyiha haqiqiy muammoni hal qiladi.
+    </p>
+  </div>
+
+  <div class="section" style="padding-top:0;">
+    <div class="proj-controls">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="input search-input" id="proj-search" type="text" placeholder="Loyiha qidirish...">
+      </div>
+      <div class="filter-bar" id="cat-filters" style="margin:0;">
+        <button class="filter-btn active" data-cat="all">Barchasi</button>
+        <button class="filter-btn" data-cat="food">🍔 Ovqat</button>
+        <button class="filter-btn" data-cat="education">📚 Ta'lim</button>
+        <button class="filter-btn" data-cat="automation">⚡ Avtomatizatsiya</button>
+        <button class="filter-btn" data-cat="business">💼 Biznes</button>
+      </div>
+      <div class="filter-bar" id="status-filters" style="margin:0;">
+        <button class="filter-btn active" data-status="all">Barcha status</button>
+        <button class="filter-btn" data-status="active">Ishlayapti</button>
+        <button class="filter-btn" data-status="planned">Rejada</button>
+      </div>
+    </div>
+
+    <div class="proj-grid" id="proj-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<div id="ai-placeholder"></div>
+
+<script src="static/js/main.js"></script>
+<script src="static/js/components.js"></script>
+<script>
+const catEmoji = { food: '🍔', education: '📚', automation: '⚡', business: '💼' };
+
+let currentCat = 'all';
+let currentStatus = 'all';
+let searchQuery = '';
+
+function renderProjects() {
+  const projects = DB.get('projects') || [];
+  const grid = document.getElementById('proj-grid');
+  grid.innerHTML = '';
+
+  const filtered = projects.filter(p => {
+    const matchCat = currentCat === 'all' || p.category === currentCat;
+    const matchStatus = currentStatus === 'all' || p.status === currentStatus;
+    const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery) || p.description.toLowerCase().includes(searchQuery) || p.tags.some(t => t.toLowerCase().includes(searchQuery));
+    return matchCat && matchStatus && matchSearch;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div>🔍</div><p>Hech narsa topilmadi</p></div>`;
+    return;
+  }
+
+  filtered.forEach(p => {
+    grid.innerHTML += `
+      <div class="project-card-full reveal">
+        <div class="proj-header">
+          <span class="proj-icon">${catEmoji[p.category] || '🔧'}</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            ${statusBadge(p.status)}
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);">${p.version}</span>
+          </div>
+        </div>
+        <h3 style="margin-bottom:10px;">${p.name}</h3>
+        <p style="font-size:0.85rem;line-height:1.65;color:var(--muted);margin-bottom:16px;">${p.description}</p>
+        <div class="tag-list" style="margin-bottom:16px;">
+          ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>
+        <div class="proj-footer">
+          <span class="proj-views">👁 ${p.views.toLocaleString()} ko'rishlar</span>
+          ${p.bot_link ? `<a href="${p.bot_link}" target="_blank" class="btn btn-sm btn-primary">Botga o'tish →</a>` : `<span class="btn btn-sm btn-ghost" style="opacity:0.5;cursor:default;">Tez orada</span>`}
+        </div>
+      </div>`;
+  });
+
+  initReveal();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  trackView('projects');
+  renderProjects();
+
+  document.getElementById('proj-search').addEventListener('input', e => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    renderProjects();
+  });
+
+  document.getElementById('cat-filters').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    currentCat = btn.dataset.cat;
+    document.querySelectorAll('#cat-filters .filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderProjects();
+  });
+
+  document.getElementById('status-filters').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    currentStatus = btn.dataset.status;
+    document.querySelectorAll('#status-filters .filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderProjects();
+  });
+});
+</script>
+</body>
+</html>

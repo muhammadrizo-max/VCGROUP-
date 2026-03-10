@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — VisionCoreGroup</title>
+<link rel="stylesheet" href="static/css/main.css">
+<style>
+  body { overflow: hidden; }
+
+  /* Login */
+  #login-screen {
+    position: fixed; inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    z-index: 9000;
+  }
+
+  .login-box {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 380px;
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .login-logo span { color: var(--gold); }
+
+  .login-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 32px; }
+
+  .login-error {
+    background: rgba(255,71,87,0.1);
+    border: 1px solid rgba(255,71,87,0.3);
+    border-radius: 8px;
+    padding: 10px;
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  /* Admin layout */
+  #admin-app { display: none; height: 100vh; }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--line);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--white);
+  }
+
+  .sidebar-logo span { color: var(--gold); }
+  .sidebar-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    background: rgba(79,142,247,0.2);
+    color: var(--gold);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: 6px;
+  }
+
+  .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+
+  .sidebar-section {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 12px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 2px;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--card); color: var(--white); }
+  .nav-item.active { background: rgba(79,142,247,0.12); color: var(--gold); }
+  .nav-item .nav-icon { font-size: 0.95rem; width: 20px; text-align: center; }
+
+  .nav-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    background: rgba(255,71,87,0.2);
+    color: var(--danger);
+    border-radius: 10px;
+    padding: 2px 7px;
+  }
+
+  .sidebar-footer {
+    padding: 12px 8px;
+    border-top: 1px solid var(--line);
+  }
+
+  .logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .logout-btn:hover { background: rgba(255,71,87,0.1); color: var(--danger); }
+
+  /* Main content */
+  .admin-main {
+    margin-left: 240px;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(6,8,16,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .admin-user {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .admin-avatar {
+    width: 28px; height: 28px;
+    background: rgba(79,142,247,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--gold);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+  }
+
+  /* Pages */
+  .admin-page { display: none; padding: 32px; flex: 1; }
+  .admin-page.active { display: block; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .stat-box-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .stat-box-sub { font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+
+  /* Chart */
+  .chart-bar-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+  .chart-row { display: flex; align-items: center; gap: 12px; }
+  .chart-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); width: 70px; text-align: right; }
+  .chart-bar-bg { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+  .chart-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--accent)); border-radius: 4px; transition: width 0.8s ease; }
+  .chart-val { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); width: 40px; }
+
+  /* Table */
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .admin-table td {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .table-actions { display: flex; gap: 6px; }
+
+  /* CRUD modal */
+  .crud-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .crud-overlay.open { display: flex; }
+
+  .crud-modal {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 32px;
+  }
+
+  .crud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .crud-header h3 { font-size: 1.1rem; }
+
+  .crud-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  /* Messages */
+  .msg-item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+  }
+
+  .msg-item.unread { border-color: rgba(79,142,247,0.3); }
+
+  .msg-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .msg-from { font-weight: 600; font-size: 0.88rem; }
+  .msg-date { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted); }
+  .msg-email { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--gold); margin-bottom: 6px; }
+  .msg-text { font-size: 0.85rem; color: var(--muted); }
+
+  /* Section header */
+  .section-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .section-hdr h2 { font-size: 1.2rem; }
+
+  .card-wrap {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Vision<span>Core</span>Group</div>
+    <p class="login-sub">Admin Panel — kirish talab etiladi</p>
+    <div class="login-error" id="login-error">Noto'g'ri parol</div>
+    <div class="form-group" style="text-align:left;">
+      <label class="form-label">Login</label>
+      <input class="input" id="login-user" type="text" placeholder="admin" value="admin">
+    </div>
+    <div class="form-group" style="text-align:left;">
+      <label class="form-label">Parol</label>
+      <input class="input" id="login-pass" type="password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="doLogin()">Kirish →</button>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:16px;">Demo: admin / vcg2026</p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="admin-app">
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar">
+    <div class="sidebar-logo">VCG <span>Admin</span><span class="sidebar-badge">v1.0</span></div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Asosiy</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('messages')">
+        <span class="nav-icon">✉️</span> Murojaatlar
+        <span class="nav-badge" id="msg-count">0</span>
+      </div>
+      <div class="sidebar-section">Kontent</div>
+      <div class="nav-item" onclick="showPage('projects-admin')">
+        <span class="nav-icon">📂</span> Loyihalar
+      </div>
+      <div class="nav-item" onclick="showPage('team-admin')">
+        <span class="nav-icon">👥</span> Jamoa
+      </div>
+      <div class="nav-item" onclick="showPage('blog-admin')">
+        <span class="nav-icon">📝</span> Blog
+      </div>
+      <div class="sidebar-section">Sayt</div>
+      <div class="nav-item" onclick="window.open('index.html','_blank')">
+        <span class="nav-icon">🌐</span> Saytni ko'rish ↗
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <span>🚪</span> Chiqish
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-right">
+        <div class="admin-user">
+          <div class="admin-avatar">MR</div>
+          <span>admin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="admin-page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-num" id="s-views">0</div>
+          <div class="stat-box-label">Jami ko'rishlar</div>
+          <div class="stat-box-sub">Barcha sahifalar</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num" id="s-projects">0</div>
+          <div class="stat-box-label">Loyihalar</div>
+          <div class="stat-box-sub" id="s-active">aktiv</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num" id="s-team">0</div>
+          <div class="stat-box-label">Jamoa a'zolari</div>
+          <div class="stat-box-sub">6 rol</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num" id="s-msgs">0</div>
+          <div class="stat-box-label">Yangi murojaatlar</div>
+          <div class="stat-box-sub">O'qilmagan</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:20px;">
+        <div class="card-wrap" style="padding:24px;">
+          <h3 style="margin-bottom:20px;font-size:1rem;">Sahifalar trafiki</h3>
+          <div class="chart-bar-wrap" id="traffic-chart"></div>
+        </div>
+        <div class="card-wrap" style="padding:24px;">
+          <h3 style="margin-bottom:20px;font-size:1rem;">Top loyihalar (ko'rishlar)</h3>
+          <div class="chart-bar-wrap" id="proj-chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="admin-page" id="page-messages">
+      <div class="section-hdr">
+        <h2>Murojaatlar</h2>
+        <button class="btn btn-sm btn-ghost" onclick="markAllRead()">Barchasi o'qildi</button>
+      </div>
+      <div id="messages-list"></div>
+    </div>
+
+    <!-- PROJECTS ADMIN -->
+    <div class="admin-page" id="page-projects-admin">
+      <div class="section-hdr">
+        <h2>Loyihalar boshqaruvi</h2>
+        <button class="btn btn-primary btn-sm" onclick="openCrud('project', null)">+ Yangi loyiha</button>
+      </div>
+      <div class="card-wrap">
+        <table class="admin-table" id="proj-table"></table>
+      </div>
+    </div>
+
+    <!-- TEAM ADMIN -->
+    <div class="admin-page" id="page-team-admin">
+      <div class="section-hdr">
+        <h2>Jamoa boshqaruvi</h2>
+        <button class="btn btn-primary btn-sm" onclick="openCrud('team', null)">+ A'zo qo'shish</button>
+      </div>
+      <div class="card-wrap">
+        <table class="admin-table" id="team-table"></table>
+      </div>
+    </div>
+
+    <!-- BLOG ADMIN -->
+    <div class="admin-page" id="page-blog-admin">
+      <div class="section-hdr">
+        <h2>Blog boshqaruvi</h2>
+        <button class="btn btn-primary btn-sm" onclick="openCrud('blog', null)">+ Yangi post</button>
+      </div>
+      <div class="card-wrap">
+        <table class="admin-table" id="blog-table"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CRUD MODAL -->
+<div class="crud-overlay" id="crud-overlay">
+  <div class="crud-modal">
+    <div class="crud-header">
+      <h3 id="crud-title">Tahrirlash</h3>
+      <button class="crud-close" onclick="closeCrud()">✕</button>
+    </div>
+    <div id="crud-form"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeCrud()">Bekor</button>
+      <button class="btn btn-primary" onclick="saveCrud()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<script src="static/js/main.js"></script>
+<script>
+const ADMIN_PASS = 'vcg2026';
+let currentCrudType = null;
+let currentCrudId = null;
+
+function doLogin() {
+  const user = document.getElementById('login-user').value;
+  const pass = document.getElementById('login-pass').value;
+  if (user === 'admin' && pass === ADMIN_PASS) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-app').style.display = 'flex';
+    loadDashboard();
+    updateMsgCount();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogout() {
+  document.getElementById('admin-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function showPage(id) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  const titles = { dashboard: 'Dashboard', messages: 'Murojaatlar', 'projects-admin': 'Loyihalar', 'team-admin': 'Jamoa', 'blog-admin': 'Blog' };
+  document.getElementById('page-title').textContent = titles[id] || id;
+
+  if (id === 'projects-admin') renderProjTable();
+  if (id === 'team-admin') renderTeamTable();
+  if (id === 'blog-admin') renderBlogTable();
+  if (id === 'messages') renderMessages();
+}
+
+function updateMsgCount() {
+  const stats = DB.get('stats');
+  const unread = stats.messages.filter(m => !m.read).length;
+  document.getElementById('msg-count').textContent = unread;
+  document.getElementById('msg-count').style.display = unread ? 'inline' : 'none';
+}
+
+function loadDashboard() {
+  const stats = DB.get('stats');
+  const projects = DB.get('projects') || [];
+  const team = DB.get('team') || [];
+
+  document.getElementById('s-views').textContent = stats.total_views.toLocaleString();
+  document.getElementById('s-projects').textContent = projects.length;
+  document.getElementById('s-active').textContent = projects.filter(p => p.status === 'active').length + ' aktiv';
+  document.getElementById('s-team').textContent = team.length;
+  document.getElementById('s-msgs').textContent = stats.messages.filter(m => !m.read).length;
+
+  // Traffic chart
+  const pv = stats.page_views;
+  const maxPV = Math.max(...Object.values(pv));
+  const tchart = document.getElementById('traffic-chart');
+  tchart.innerHTML = Object.entries(pv).map(([page, val]) => `
+    <div class="chart-row">
+      <div class="chart-label">${page}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${(val/maxPV*100).toFixed(0)}%"></div></div>
+      <div class="chart-val">${val}</div>
+    </div>`).join('');
+
+  // Projects chart
+  const maxPJ = Math.max(...projects.map(p => p.views));
+  const pchart = document.getElementById('proj-chart');
+  pchart.innerHTML = [...projects].sort((a,b)=>b.views-a.views).slice(0,4).map(p => `
+    <div class="chart-row">
+      <div class="chart-label" style="width:90px;font-size:0.6rem;">${p.name.substring(0,10)}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${(p.views/maxPJ*100).toFixed(0)}%;background:linear-gradient(90deg,var(--accent),var(--gold))"></div></div>
+      <div class="chart-val">${p.views}</div>
+    </div>`).join('');
+}
+
+// ---- Tables ----
+function renderProjTable() {
+  const projects = DB.get('projects') || [];
+  document.getElementById('proj-table').innerHTML = `
+    <thead><tr>
+      <th>Nom</th><th>Kategoriya</th><th>Status</th><th>Versiya</th><th>Ko'rishlar</th><th>Harakatlar</th>
+    </tr></thead>
+    <tbody>${projects.map(p => `
+      <tr>
+        <td><strong>${p.name}</strong></td>
+        <td>${p.category}</td>
+        <td>${statusBadge(p.status)}</td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">${p.version}</span></td>
+        <td>${p.views}</td>
+        <td><div class="table-actions">
+          <button class="btn btn-sm btn-outline" onclick="openCrud('project',${p.id})">✏️ Tahrir</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('projects',${p.id},renderProjTable)">🗑️</button>
+        </div></td>
+      </tr>`).join('')}</tbody>`;
+}
+
+function renderTeamTable() {
+  const team = DB.get('team') || [];
+  document.getElementById('team-table').innerHTML = `
+    <thead><tr>
+      <th>A'zo</th><th>Rol</th><th>Daraja</th><th>Telegram</th><th>Harakatlar</th>
+    </tr></thead>
+    <tbody>${team.map(m => `
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;background:rgba(79,142,247,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--gold);">${m.avatar}</div>
+          <div><div style="font-weight:600;">${m.full_name}</div><div style="font-size:0.72rem;color:var(--muted);">@${m.username}</div></div>
+        </div></td>
+        <td>${roleBadge(m.role)}</td>
+        <td>${levelBadge(m.level)}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">${m.telegram}</td>
+        <td><div class="table-actions">
+          <button class="btn btn-sm btn-outline" onclick="openCrud('team',${m.id})">✏️ Tahrir</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('team',${m.id},renderTeamTable)">🗑️</button>
+        </div></td>
+      </tr>`).join('')}</tbody>`;
+}
+
+function renderBlogTable() {
+  const blog = DB.get('blog') || [];
+  document.getElementById('blog-table').innerHTML = `
+    <thead><tr>
+      <th>Sarlavha</th><th>Kategoriya</th><th>Sana</th><th>Ko'rishlar</th><th>Harakatlar</th>
+    </tr></thead>
+    <tbody>${blog.map(b => `
+      <tr>
+        <td><strong>${b.image_emoji} ${b.title}</strong></td>
+        <td>${b.category}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">${b.date}</td>
+        <td>${b.views}</td>
+        <td><div class="table-actions">
+          <button class="btn btn-sm btn-outline" onclick="openCrud('blog',${b.id})">✏️ Tahrir</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('blog',${b.id},renderBlogTable)">🗑️</button>
+        </div></td>
+      </tr>`).join('')}</tbody>`;
+}
+
+function renderMessages() {
+  const stats = DB.get('stats');
+  const list = document.getElementById('messages-list');
+  if (!stats.messages.length) {
+    list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px;">Murojaat yo\'q</p>';
+    return;
+  }
+  list.innerHTML = [...stats.messages].reverse().map(m => `
+    <div class="msg-item ${m.read ? '' : 'unread'}" onclick="markRead(${m.id})">
+      <div class="msg-header">
+        <span class="msg-from">${m.name} ${!m.read ? '<span style="font-size:0.6rem;background:rgba(79,142,247,0.2);color:var(--gold);padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;">YANGI</span>' : ''}</span>
+        <span class="msg-date">${m.date}</span>
+      </div>
+      <div class="msg-email">${m.email}</div>
+      <div class="msg-text">${m.message}</div>
+    </div>`).join('');
+}
+
+function markRead(id) {
+  const stats = DB.get('stats');
+  const msg = stats.messages.find(m => m.id === id);
+  if (msg) msg.read = true;
+  DB.set('stats', stats);
+  renderMessages();
+  updateMsgCount();
+}
+
+function markAllRead() {
+  const stats = DB.get('stats');
+  stats.messages.forEach(m => m.read = true);
+  DB.set('stats', stats);
+  renderMessages();
+  updateMsgCount();
+}
+
+function deleteItem(collection, id, refresh) {
+  if (!confirm('O\'chirishni tasdiqlang')) return;
+  const items = DB.get(collection).filter(i => i.id !== id);
+  DB.set(collection, items);
+  refresh();
+}
+
+// ---- CRUD ----
+function openCrud(type, id) {
+  currentCrudType = type;
+  currentCrudId = id;
+
+  const overlay = document.getElementById('crud-overlay');
+  const form = document.getElementById('crud-form');
+  let title = '';
+  let html = '';
+
+  if (type === 'project') {
+    title = id ? 'Loyihani tahrirlash' : 'Yangi loyiha';
+    const p = id ? (DB.get('projects') || []).find(x => x.id === id) : {};
+    html = `
+      <div class="form-group"><label class="form-label">Nom</label><input class="input" id="f-name" value="${p.name||''}"></div>
+      <div class="form-group"><label class="form-label">Tavsif</label><textarea class="textarea" id="f-desc" style="min-height:80px;">${p.description||''}</textarea></div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Versiya</label><input class="input" id="f-version" value="${p.version||'v1.0.0'}"></div>
+        <div class="form-group"><label class="form-label">Status</label>
+          <select class="select" id="f-status">
+            <option value="active" ${p.status==='active'?'selected':''}>Ishlayapti</option>
+            <option value="planned" ${p.status==='planned'?'selected':''}>Rejada</option>
+            <option value="inactive" ${p.status==='inactive'?'selected':''}>To'xtatilgan</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Kategoriya</label>
+          <select class="select" id="f-cat">
+            <option value="food" ${p.category==='food'?'selected':''}>Ovqat</option>
+            <option value="education" ${p.category==='education'?'selected':''}>Ta'lim</option>
+            <option value="automation" ${p.category==='automation'?'selected':''}>Avtomatizatsiya</option>
+            <option value="business" ${p.category==='business'?'selected':''}>Biznes</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Bot linki</label><input class="input" id="f-link" value="${p.bot_link||''}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Teglar (vergul bilan)</label><input class="input" id="f-tags" value="${(p.tags||[]).join(', ')}"></div>`;
+  }
+
+  if (type === 'team') {
+    title = id ? 'A\'zoni tahrirlash' : 'Yangi a\'zo';
+    const m = id ? (DB.get('team') || []).find(x => x.id === id) : {};
+    html = `
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Username</label><input class="input" id="f-username" value="${m.username||''}"></div>
+        <div class="form-group"><label class="form-label">To'liq ism</label><input class="input" id="f-fullname" value="${m.full_name||''}"></div>
+      </div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Rol</label>
+          <select class="select" id="f-role">
+            ${['Creator','Assist','Veri','Promo','Support','Scout'].map(r=>`<option ${m.role===r?'selected':''}>${r}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Daraja</label>
+          <select class="select" id="f-level">
+            ${['Core','Lead','Senior','Junior'].map(l=>`<option ${m.level===l?'selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Bio</label><textarea class="textarea" id="f-bio">${m.bio||''}</textarea></div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Telegram</label><input class="input" id="f-telegram" value="${m.telegram||''}"></div>
+        <div class="form-group"><label class="form-label">Avatar (2 harf)</label><input class="input" id="f-avatar" maxlength="2" value="${m.avatar||''}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Ko'nikmalar (vergul)</label><input class="input" id="f-skills" value="${(m.skills||[]).join(', ')}"></div>`;
+  }
+
+  if (type === 'blog') {
+    title = id ? 'Postni tahrirlash' : 'Yangi post';
+    const b = id ? (DB.get('blog') || []).find(x => x.id === id) : {};
+    html = `
+      <div class="form-group"><label class="form-label">Sarlavha</label><input class="input" id="f-title" value="${b.title||''}"></div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Kategoriya</label>
+          <select class="select" id="f-bcat">
+            ${['release','update','news'].map(c=>`<option value="${c}" ${b.category===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Emoji</label><input class="input" id="f-emoji" value="${b.image_emoji||'📝'}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Qisqa tavsif</label><textarea class="textarea" style="min-height:70px;" id="f-excerpt">${b.excerpt||''}</textarea></div>
+      <div class="form-group"><label class="form-label">To'liq matn</label><textarea class="textarea" id="f-content">${b.content||''}</textarea></div>`;
+  }
+
+  document.getElementById('crud-title').textContent = title;
+  form.innerHTML = html;
+  overlay.classList.add('open');
+}
+
+function closeCrud() {
+  document.getElementById('crud-overlay').classList.remove('open');
+}
+
+function saveCrud() {
+  const type = currentCrudType;
+  const id = currentCrudId;
+
+  if (type === 'project') {
+    const projects = DB.get('projects') || [];
+    const item = {
+      id: id || genId(),
+      name: document.getElementById('f-name').value,
+      description: document.getElementById('f-desc').value,
+      version: document.getElementById('f-version').value,
+      status: document.getElementById('f-status').value,
+      category: document.getElementById('f-cat').value,
+      bot_link: document.getElementById('f-link').value || null,
+      tags: document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+      views: id ? projects.find(p=>p.id===id)?.views || 0 : 0,
+      featured: false
+    };
+    if (id) {
+      const idx = projects.findIndex(p=>p.id===id);
+      projects[idx] = item;
+    } else { projects.push(item); }
+    DB.set('projects', projects);
+    closeCrud();
+    renderProjTable();
+  }
+
+  if (type === 'team') {
+    const team = DB.get('team') || [];
+    const item = {
+      id: id || genId(),
+      username: document.getElementById('f-username').value,
+      full_name: document.getElementById('f-fullname').value,
+      role: document.getElementById('f-role').value,
+      level: document.getElementById('f-level').value,
+      bio: document.getElementById('f-bio').value,
+      telegram: document.getElementById('f-telegram').value,
+      avatar: document.getElementById('f-avatar').value.toUpperCase(),
+      skills: document.getElementById('f-skills').value.split(',').map(s=>s.trim()).filter(Boolean)
+    };
+    if (id) { const idx = team.findIndex(m=>m.id===id); team[idx] = item; } else { team.push(item); }
+    DB.set('team', team);
+    closeCrud();
+    renderTeamTable();
+  }
+
+  if (type === 'blog') {
+    const blog = DB.get('blog') || [];
+    const item = {
+      id: id || genId(),
+      title: document.getElementById('f-title').value,
+      slug: document.getElementById('f-title').value.toLowerCase().replace(/\s+/g,'-'),
+      excerpt: document.getElementById('f-excerpt').value,
+      content: document.getElementById('f-content').value,
+      category: document.getElementById('f-bcat').value,
+      image_emoji: document.getElementById('f-emoji').value,
+      date: new Date().toISOString().split('T')[0],
+      author: 'admin',
+      views: id ? blog.find(b=>b.id===id)?.views || 0 : 0
+    };
+    if (id) { const idx = blog.findIndex(b=>b.id===id); blog[idx] = item; } else { blog.push(item); }
+    DB.set('blog', blog);
+    closeCrud();
+    renderBlogTable();
+  }
+}
+
+document.getElementById('crud-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeCrud();
+});
+</script>
+</body>
+</html>

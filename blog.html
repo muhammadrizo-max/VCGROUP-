@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — VisionCoreGroup</title>
+<link rel="stylesheet" href="static/css/main.css">
+<style>
+  .page-hero { padding: 80px 48px 48px; max-width: 1300px; margin: 0 auto; }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .blog-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .blog-card:hover { transform: translateY(-3px); border-color: rgba(79,142,247,0.3); }
+
+  .blog-emoji { font-size: 2.2rem; }
+  .blog-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .blog-card h3 { font-size: 1.05rem; line-height: 1.3; }
+  .blog-excerpt { font-size: 0.85rem; line-height: 1.65; color: var(--muted); flex: 1; }
+
+  .blog-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+
+  .blog-author {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--gold);
+  }
+
+  .blog-views { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted); }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 800;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 40px;
+  }
+
+  .modal-close {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-bottom: 16px;
+  }
+
+  .modal h2 { margin-bottom: 12px; }
+  .modal-meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 20px; }
+  .modal-body { font-size: 0.92rem; line-height: 1.85; color: rgba(238,240,248,0.75); }
+
+  @media (max-width: 900px) {
+    .page-hero { padding: 60px 20px 32px; }
+    .blog-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page">
+  <div class="page-hero">
+    <div class="section-tag">Blog</div>
+    <h1 style="margin-bottom:16px;">Yangiliklar</h1>
+    <p style="font-size:0.95rem;color:var(--muted);max-width:520px;line-height:1.75;margin-bottom:36px;">
+      Yangi botlar, versiyalar va VisionCoreGroup yangiliklari.
+    </p>
+  </div>
+
+  <div class="section" style="padding-top:0;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="input search-input" id="blog-search" type="text" placeholder="Maqola qidirish...">
+      </div>
+      <div class="filter-bar" id="blog-cat-filter" style="margin:0;">
+        <button class="filter-btn active" data-c="all">Barchasi</button>
+        <button class="filter-btn" data-c="release">🚀 Release</button>
+        <button class="filter-btn" data-c="update">🔄 Update</button>
+        <button class="filter-btn" data-c="news">📋 Yangilik</button>
+      </div>
+    </div>
+
+    <div class="blog-grid" id="blog-grid"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="blog-modal">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-emoji" style="font-size:2.5rem;margin-bottom:16px;clear:both;"></div>
+    <h2 id="modal-title"></h2>
+    <p class="modal-meta" id="modal-meta"></p>
+    <div class="modal-body" id="modal-content"></div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<div id="ai-placeholder"></div>
+
+<script src="static/js/main.js"></script>
+<script src="static/js/components.js"></script>
+<script>
+let blogCat = 'all';
+let blogSearch = '';
+
+function renderBlog() {
+  const posts = DB.get('blog') || [];
+  const grid = document.getElementById('blog-grid');
+  grid.innerHTML = '';
+
+  const filtered = posts.filter(p => {
+    const mc = blogCat === 'all' || p.category === blogCat;
+    const mq = !blogSearch || p.title.toLowerCase().includes(blogSearch) || p.excerpt.toLowerCase().includes(blogSearch);
+    return mc && mq;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--muted);">📭 Maqola topilmadi</div>`;
+    return;
+  }
+
+  filtered.forEach(post => {
+    grid.innerHTML += `
+      <div class="blog-card reveal" onclick="openPost(${post.id})">
+        <div class="blog-emoji">${post.image_emoji}</div>
+        <div class="blog-date">${formatDate(post.date)}</div>
+        <h3>${post.title}</h3>
+        <p class="blog-excerpt">${post.excerpt}</p>
+        <div class="blog-footer">
+          <span class="blog-author">@${post.author}</span>
+          <span class="blog-views">👁 ${post.views}</span>
+        </div>
+      </div>`;
+  });
+
+  initReveal();
+}
+
+function openPost(id) {
+  const posts = DB.get('blog') || [];
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+  document.getElementById('modal-emoji').textContent = post.image_emoji;
+  document.getElementById('modal-title').textContent = post.title;
+  document.getElementById('modal-meta').textContent = `${formatDate(post.date)} · @${post.author} · 👁 ${post.views} ko'rishlar`;
+  document.getElementById('modal-content').textContent = post.content;
+  document.getElementById('blog-modal').classList.add('open');
+}
+
+document.getElementById('modal-close').addEventListener('click', () => {
+  document.getElementById('blog-modal').classList.remove('open');
+});
+
+document.getElementById('blog-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  trackView('blog');
+  renderBlog();
+
+  document.getElementById('blog-search').addEventListener('input', e => {
+    blogSearch = e.target.value.toLowerCase();
+    renderBlog();
+  });
+
+  document.getElementById('blog-cat-filter').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    blogCat = btn.dataset.c;
+    document.querySelectorAll('#blog-cat-filter .filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderBlog();
+  });
+});
+</script>
+</body>
+</html>

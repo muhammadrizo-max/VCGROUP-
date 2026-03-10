@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "username": "MuhammadRizo",
+    "full_name": "Muhammadrizo",
+    "role": "Creator",
+    "level": "Core",
+    "bio": "Founder & Lead Engineer. Full-stack architect specializing in Python ecosystems and Telegram bot platforms.",
+    "telegram": "@MuhammadRizo",
+    "avatar": "MR",
+    "skills": ["Python", "Aiogram", "FastAPI", "PostgreSQL"]
+  },
+  {
+    "id": 2,
+    "username": "AmirDev",
+    "full_name": "Amir Toshmatov",
+    "role": "Assist",
+    "level": "Senior",
+    "bio": "Backend engineer focused on database architecture, API design, and scalable async systems.",
+    "telegram": "@AmirDev",
+    "avatar": "AT",
+    "skills": ["PostgreSQL", "SQLAlchemy", "Redis", "Docker"]
+  },
+  {
+    "id": 3,
+    "username": "NodiraUX",
+    "full_name": "Nodira Karimova",
+    "role": "Veri",
+    "level": "Lead",
+    "bio": "UI/UX designer with a focus on conversion-driven interfaces and intuitive user flows.",
+    "telegram": "@NodiraUX",
+    "avatar": "NK",
+    "skills": ["Figma", "CSS", "User Research", "Prototyping"]
+  },
+  {
+    "id": 4,
+    "username": "SardorOps",
+    "full_name": "Sardor Rakhimov",
+    "role": "Support",
+    "level": "Junior",
+    "bio": "DevOps & support engineer. Manages deployments, monitors systems, and handles client onboarding.",
+    "telegram": "@SardorOps",
+    "avatar": "SR",
+    "skills": ["Docker", "Linux", "Vercel", "CI/CD"]
+  },
+  {
+    "id": 5,
+    "username": "ZafarPromo",
+    "full_name": "Zafar Mirzayev",
+    "role": "Promo",
+    "level": "Junior",
+    "bio": "Marketing & promotion specialist. Grows our community and manages content across channels.",
+    "telegram": "@ZafarPromo",
+    "avatar": "ZM",
+    "skills": ["SMM", "Content", "Analytics", "Growth"]
+  },
+  {
+    "id": 6,
+    "username": "LayloScout",
+    "full_name": "Laylo Yusupova",
+    "role": "Scout",
+    "level": "Junior",
+    "bio": "Talent scout and community manager. Finds new opportunities and builds partnerships.",
+    "telegram": "@LayloScout",
+    "avatar": "LY",
+    "skills": ["Research", "Networking", "HR", "Community"]
+  }
+]

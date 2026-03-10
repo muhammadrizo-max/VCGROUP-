@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team — VisionCoreGroup</title>
+<link rel="stylesheet" href="static/css/main.css">
+<style>
+  .page-hero {
+    padding: 80px 48px 48px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .team-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .team-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .team-card:hover { transform: translateY(-3px); border-color: rgba(79,142,247,0.3); }
+  .team-card:hover::after { transform: scaleX(1); }
+
+  .team-card.core-member {
+    border-color: rgba(79,142,247,0.3);
+    background: linear-gradient(135deg, rgba(79,142,247,0.06) 0%, var(--card) 100%);
+  }
+
+  .team-avatar-lg {
+    width: 72px; height: 72px;
+    background: rgba(79,142,247,0.12);
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .team-card.core-member .team-avatar-lg {
+    border-color: rgba(79,142,247,0.4);
+    background: rgba(79,142,247,0.15);
+  }
+
+  .online-dot {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .team-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+  .team-info { flex: 1; }
+  .team-info h3 { margin-bottom: 4px; }
+  .team-handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .team-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .team-bio {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .skills-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+
+  .team-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+
+  /* Role legend */
+  .role-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .role-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+  }
+
+  .role-item strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+  }
+
+  .role-item span { color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .page-hero { padding: 60px 20px 32px; }
+    .team-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page">
+  <div class="page-hero">
+    <div class="section-tag">Jamoa</div>
+    <h1 style="margin-bottom:16px;">Jamoamiz</h1>
+    <p style="font-size:0.95rem;line-height:1.75;color:var(--muted);max-width:560px;margin-bottom:40px;">
+      VisionCoreGroup — 6 nafar mutaxassis. Har biri o'z sohasida professional.
+    </p>
+
+    <div class="role-legend">
+      <div class="role-item"><strong>Creator</strong><span>Asoschiva bosh muhandis</span></div>
+      <div class="role-item"><strong>Assist</strong><span>Texnik yordamchi</span></div>
+      <div class="role-item"><strong>Veri</strong><span>Sifat nazorati</span></div>
+      <div class="role-item"><strong>Promo</strong><span>Marketing</span></div>
+      <div class="role-item"><strong>Support</strong><span>Qo'llab-quvvatlash</span></div>
+      <div class="role-item"><strong>Scout</strong><span>Iste'dod izlash</span></div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0;">
+    <div class="filter-bar" id="role-filter" style="margin-bottom:24px;">
+      <button class="filter-btn active" data-role="all">Barchasi</button>
+      <button class="filter-btn" data-role="Creator">Creator</button>
+      <button class="filter-btn" data-role="Assist">Assist</button>
+      <button class="filter-btn" data-role="Veri">Veri</button>
+      <button class="filter-btn" data-role="Promo">Promo</button>
+      <button class="filter-btn" data-role="Support">Support</button>
+      <button class="filter-btn" data-role="Scout">Scout</button>
+    </div>
+
+    <div class="team-grid" id="team-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<div id="ai-placeholder"></div>
+
+<script src="static/js/main.js"></script>
+<script src="static/js/components.js"></script>
+<script>
+let currentRole = 'all';
+
+function renderTeam() {
+  const team = DB.get('team') || [];
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = '';
+
+  const filtered = currentRole === 'all' ? team : team.filter(m => m.role === currentRole);
+
+  filtered.forEach(m => {
+    const isCore = m.level === 'Core';
+    grid.innerHTML += `
+      <div class="team-card ${isCore ? 'core-member' : ''} reveal">
+        <div class="team-header">
+          <div class="team-avatar-lg">
+            ${m.avatar}
+            ${isCore ? '<span class="online-dot"></span>' : ''}
+          </div>
+          <div class="team-info">
+            <h3 style="font-size:1.05rem;">${m.full_name}</h3>
+            <div class="team-handle">${m.telegram}</div>
+            <div class="team-badges">
+              ${roleBadge(m.role)}
+              ${levelBadge(m.level)}
+            </div>
+          </div>
+        </div>
+        <p class="team-bio">${m.bio}</p>
+        <div class="skills-row">
+          ${m.skills.map(s => `<span class="tag">${s}</span>`).join('')}
+        </div>
+        <div class="team-footer">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);">@${m.username}</span>
+          <a href="https://t.me/${m.username}" target="_blank" class="btn btn-sm btn-outline">Telegram →</a>
+        </div>
+      </div>`;
+  });
+
+  initReveal();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  trackView('team');
+  renderTeam();
+
+  document.getElementById('role-filter').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    currentRole = btn.dataset.role;
+    document.querySelectorAll('#role-filter .filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderTeam();
+  });
+});
+</script>
+</body>
+</html>

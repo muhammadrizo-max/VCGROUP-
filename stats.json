@@ -1,0 +1,15 @@
+{
+  "total_views": 8420,
+  "page_views": {
+    "home": 3200,
+    "projects": 1840,
+    "team": 980,
+    "bots": 1400,
+    "blog": 620,
+    "contact": 380
+  },
+  "messages": [
+    {"id": 1, "name": "Jahongir", "email": "j@example.com", "message": "Telegram bot qilishingiz mumkinmi?", "date": "2026-03-08", "read": false},
+    {"id": 2, "name": "Malika", "email": "m@example.com", "message": "LinguaBot haqida savol bor edi", "date": "2026-03-07", "read": true}
+  ]
+}

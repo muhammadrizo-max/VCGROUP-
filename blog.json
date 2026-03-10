@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "title": "TezLazzat v2.1 — Yangi to'lov tizimi",
+    "slug": "tezlazzat-v2-1",
+    "excerpt": "TezLazzat botiga screenshot-based to'lov tizimi qo'shildi. Endi mijozlar to'lovni rasmini yuborib buyurtma tasdiqlata oladi.",
+    "content": "TezLazzat botining yangi versiyasi chiqdi. Bu versiyada asosiy o'zgarish — to'lov tizimi. Endi foydalanuvchilar bank orqali to'lov qilib, screenshot yuborishadi. Admin panel orqali to'lovni tasdiqlash 30 soniyadan kam vaqt oladi.",
+    "date": "2026-03-05",
+    "author": "MuhammadRizo",
+    "category": "release",
+    "views": 342,
+    "image_emoji": "🚀"
+  },
+  {
+    "id": 2,
+    "title": "LinguaBot — 5 til qo'shildi",
+    "slug": "linguabot-5-languages",
+    "excerpt": "LinguaBot endi O'zbek, Rus, Ingliz, Turk va Koreys tillarini qo'llab-quvvatlaydi. CEFR darajalari bilan.",
+    "content": "LinguaBot kengaytirildi. Endi platformada 5 ta til mavjud. Har bir til uchun A1dan C2gacha CEFR darajalari, sertifikat tayyorlash moduli va XP tizimi ishlaydi.",
+    "date": "2026-02-28",
+    "author": "MuhammadRizo",
+    "category": "update",
+    "views": 218,
+    "image_emoji": "🌍"
+  },
+  {
+    "id": 3,
+    "title": "VisionCoreGroup — 2026 rejalari",
+    "slug": "vcg-2026-plans",
+    "excerpt": "Yangi yil — yangi loyihalar. 2026 yilda VCG nimalar qilishni rejalashtirmoqda?",
+    "content": "2026 yilda biz VisionCRM, AI assistant va yana 3 ta bot platformasini chiqarishni rejalashtiryapmiz. Jamoamiz kengaymoqda.",
+    "date": "2026-01-15",
+    "author": "MuhammadRizo",
+    "category": "news",
+    "views": 156,
+    "image_emoji": "📋"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "TezLazzat Bot",
+    "description": "Premium fast food ordering platform. Full-stack Telegram bot with loyalty program, referral system, and role-based admin architecture.",
+    "version": "v2.1.0",
+    "status": "active",
+    "category": "food",
+    "bot_link": "https://t.me/tezlazzat_bot",
+    "tags": ["Aiogram", "PostgreSQL", "Payments"],
+    "views": 1240,
+    "featured": true
+  },
+  {
+    "id": 2,
+    "name": "LinguaBot",
+    "description": "Multilingual language learning platform with CEFR levels, XP progression, 5 languages, and certificate preparation.",
+    "version": "v1.3.0",
+    "status": "active",
+    "category": "education",
+    "bot_link": "https://t.me/lingua_learn_bot",
+    "tags": ["SQLite", "Aiogram", "NLP"],
+    "views": 890,
+    "featured": true
+  },
+  {
+    "id": 3,
+    "name": "AutoReact Bot",
+    "description": "Channel auto-reaction system with per-channel async queues, configurable emoji presets, and automatic admin assignment.",
+    "version": "v1.0.2",
+    "status": "active",
+    "category": "automation",
+    "bot_link": "https://t.me/autoreact_bot",
+    "tags": ["python-telegram-bot", "Async", "Queues"],
+    "views": 450,
+    "featured": false
+  },
+  {
+    "id": 4,
+    "name": "VisionCRM",
+    "description": "Lightweight CRM system for small businesses. Manage clients, deals, and tasks via Telegram interface.",
+    "version": "v0.9.0",
+    "status": "planned",
+    "category": "business",
+    "bot_link": null,
+    "tags": ["FastAPI", "SQLAlchemy", "Aiogram"],
+    "views": 210,
+    "featured": false
+  }
+]
